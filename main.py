@@ -22,9 +22,6 @@ def get_catalog_page_urls(start_catalog_url, max_catalog_page):
 
     return catalog_page_urls
 
-def get_html_text_for_catalog_pages(urls):
-    pass
-
 
 def fetch_catalog_pages_with_browser(urls):
     """Получение HTML страниц каталога и извлечение ссылок на новостройки"""
@@ -57,18 +54,18 @@ def get_houses_links_from_catalog_pages(catalog_pages):
     return urls_to_houses
 
 
-def fetch_house_pages(houses_urls):
-
-    house_pages = {}
-    for part in split_iterable_by_batches(list(houses_urls), batch_size=50):
-        fetcher = UrlFetcher(part, objects_class=HousePage)
+def fetch_urls_asynchronously(urls, batch_size, objects_class):
+    result = {}
+    for part in split_iterable_by_batches(list(urls), batch_size=batch_size):
+        fetcher = UrlFetcher(part, objects_class=objects_class)
         asyncio.run(fetcher.start_fetching())
-        house_pages.update(fetcher.html_pages)
+        result.update(fetcher.html_pages)
 
-    return house_pages
+    return result
 
 
 def create_houses(house_pages):
+    """Вернет список созданных объектов домов"""
     houses = {}
     for house_url, house_page in house_pages.items():
         house = house_page.create_house_object()
@@ -91,11 +88,8 @@ def get_builders_urls_from_houses(houses):
 
 
 def fetch_builders_info(builders_urls):
-    builder_pages = {}
-    for part in split_iterable_by_batches(list(builders_urls), batch_size=50):
-        fetcher = UrlFetcher(part, objects_class=BuilderPage)
-        asyncio.run(fetcher.start_fetching())
-        builder_pages.update(fetcher.html_pages)
+
+    builder_pages = fetch_urls_asynchronously(urls=builders_urls, batch_size=BATCH_SIZE, objects_class=BuilderPage)
 
     for builder_page in builder_pages.values():
         builder_page.fetch_builder_info()
@@ -109,16 +103,13 @@ def fetch_informationn_from_check_pages(houses):
         check_page_url = house.get_check_page_url()
         check_page_urls.add(check_page_url)
 
-    check_pages = {}
-    for part in split_iterable_by_batches(list(check_page_urls), batch_size=50):
-        fetcher = UrlFetcher(part, objects_class=CheckPage)
-        asyncio.run(fetcher.start_fetching())
-        check_pages.update(fetcher.html_pages)
+    check_pages = fetch_urls_asynchronously(urls=check_page_urls, batch_size=BATCH_SIZE, objects_class=CheckPage)
 
     for check_page in check_pages.values():
         check_page.fetch_house_info()
 
     return check_pages
+
 
 def split_iterable_by_batches(iterable, batch_size):
     for i in range(0, len(iterable) + 1, batch_size):
@@ -198,7 +189,7 @@ if __name__ == '__main__':
     houses_urls = get_houses_links_from_catalog_pages(catalog_pages)
 
     logger.info('Загрузка страниц новостроек.')
-    house_pages = fetch_house_pages(houses_urls)
+    house_pages = fetch_urls_asynchronously(urls=houses_urls, batch_size=BATCH_SIZE, objects_class=HousePage)
 
     logger.info('Получение искомых элементов на страницах новостроек и создание объектов домов.')
     houses = create_houses(house_pages)
