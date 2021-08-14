@@ -1,3 +1,5 @@
 geckodriver
 geckodriver.log
 result.xlsx
+__pycache__/
+.idea
