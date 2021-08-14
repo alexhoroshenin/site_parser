@@ -26,7 +26,7 @@ CHECK_PAGE_PATH = '/%D1%81%D0%B5%D1%80%D0%B2%D0%B8%D1%81%D1%8B/%D0%BF%D1%80%D0%B
 CATALOG_PAGE_LIMIT = 100
 
 # Максимальное количестов загружаемых страниц каталога, включая нулевую
-CATALOG_PAGE_FETCH_LIMIT = 10
+CATALOG_PAGE_FETCH_LIMIT = 3
 
 
 OUTPUT_FILE_NAME = 'result'

@@ -82,24 +82,27 @@ class HousePage(AbstractHtmlPage):
             state = state_element.text
 
             address_element = self.soup.find("p", {"class": "styles__Address-sc-eng632-11"})
-            address_string = address_element.text
-            address = address_string.replace('Адрес: ', '')
+            if address_element:
+                address_string = address_element.text
+                address = address_string.replace('Адрес: ', '')
 
             table_elements = self.soup.find_all("div", {"class": "styles__Row-sc-1fyyfia-6"})
-            floor_count = ''
-            flat_count = ''
+            if table_elements:
+                floor_count = ''
+                flat_count = ''
 
-            for e in table_elements:
-                if e.text.startswith('Количество этажей'):
-                    floor_count = e.text.replace('Количество этажей', '')
+                for e in table_elements:
+                    if e.text.startswith('Количество этажей'):
+                        floor_count = e.text.replace('Количество этажей', '')
 
-                if e.text.startswith('Количество квартир'):
-                    flat_count = e.text.replace('Количество квартир', '')
+                    if e.text.startswith('Количество квартир'):
+                        flat_count = e.text.replace('Количество квартир', '')
 
             builder_element = self.soup.find("a", {"class": "styles__LinkContainer-sc-1u7ca6h-0"})
-            builder_name = builder_element.text
+            if builder_element:
+                builder_name = builder_element.text
 
-            builder_url = builder_element.attrs.get('href')
+                builder_url = builder_element.attrs.get('href')
 
             return House(address=address,
                          house_id=house_id,
