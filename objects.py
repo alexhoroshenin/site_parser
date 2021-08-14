@@ -87,9 +87,9 @@ class HousePage(AbstractHtmlPage):
                 address = address_string.replace('Адрес: ', '')
 
             table_elements = self.soup.find_all("div", {"class": "styles__Row-sc-1fyyfia-6"})
+            floor_count = ''
+            flat_count = ''
             if table_elements:
-                floor_count = ''
-                flat_count = ''
 
                 for e in table_elements:
                     if e.text.startswith('Количество этажей'):
