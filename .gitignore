@@ -3,3 +3,4 @@ geckodriver.log
 result.xlsx
 __pycache__/
 .idea
+ghostdriver.log
